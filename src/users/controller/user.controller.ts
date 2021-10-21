@@ -4,16 +4,15 @@ import { UserService } from '../service/user.service';
 
 @Controller('user')
 export class UserController {
+  constructor(private service: UserService) {}
 
-    constructor(private service: UserService) { }
+  @Get(':id/orders')
+  getOrders(@Param('id', ParseIntPipe) id: number) {
+    return this.service.getOrdersByUser(id);
+  }
 
-    @Get(':id/orders')
-    getOrders(@Param('id', ParseIntPipe) id: number) {
-        return this.service.getOrdersByUser(id);
-    }
-
-    @Get(':id')
-    findOne(@Param('id', ParseIntPipe) id: number) {
-        return this.service.findOne(id);
-    }
+  @Get(':id')
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.service.findOne(id);
+  }
 }

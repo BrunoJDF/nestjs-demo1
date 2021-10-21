@@ -4,7 +4,6 @@ import { Product } from '../entity/product';
 
 @Injectable()
 export class ProductsService {
-
   private counter = 1;
   private products: Product[] = [
     {
