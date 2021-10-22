@@ -8,6 +8,11 @@ import { UserService } from '../service/user.service';
 export class UserController {
   constructor(private service: UserService) { }
 
+  @Get('tasks')
+  getTasks() {
+    return this.service.getTasks();
+  }
+
   @Get(':id/orders')
   getOrders(@Param('id', ParseIntPipe) id: number) {
     return this.service.getOrdersByUser(id);
@@ -17,4 +22,6 @@ export class UserController {
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.service.findOne(id);
   }
+
+
 }

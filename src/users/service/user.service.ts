@@ -1,5 +1,6 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { Client } from 'pg';
 
 import { Order } from '../entity/order';
 import { User } from '../entity/user';
@@ -11,7 +12,8 @@ export class UserService {
   constructor(
     private productService: ProductsService,
     private configService: ConfigService,
-  ) {}
+    @Inject('PG') private clientPg: Client,
+  ) { }
 
   private users: User[] = [
     {
@@ -40,5 +42,17 @@ export class UserService {
       throw new NotFoundException('El usuario de codigo ' + id + ' no existe');
     }
     return user;
+  }
+
+  getTasks() {
+    return new Promise((resolve, reject) => {
+      this.clientPg.query('select * from tasks', (err, res) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(res.rows);
+      });
+    });
+
   }
 }
