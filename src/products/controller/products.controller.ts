@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -41,7 +42,12 @@ export class ProductsController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() payload: UpdateProductDto) {
-    return this.service.update(+id, payload);
+  update(@Param('id', ParseIntPipe) id: number, @Body() payload: UpdateProductDto) {
+    return this.service.update(id, payload);
+  }
+
+  @Delete(':id')
+  delete(@Param('id', ParseIntPipe) id: number) {
+    return this.service.delete(id);
   }
 }

@@ -1,25 +1,21 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+
 import { CreateProductDto, UpdateProductDto } from '../dto/product.dto';
 import { Product } from '../entity/product';
 
 @Injectable()
 export class ProductsService {
-  private counter = 1;
-  private products: Product[] = [
-    {
-      id: 1,
-      name: 'product 1',
-      description: 'bla bla',
-      price: 123.3,
-    },
-  ];
+
+  constructor(@InjectRepository(Product) private repository: Repository<Product>) { }
 
   findAll() {
-    return this.products;
+    return this.repository.find();
   }
 
-  findOne(id: number) {
-    const product = this.products.find((item) => item.id === id);
+  async findOne(id: number) {
+    const product = await this.repository.findOne(id);
     if (!product) {
       throw new NotFoundException('Product #' + id + ' not found');
     }
@@ -27,21 +23,34 @@ export class ProductsService {
   }
 
   create(payload: CreateProductDto) {
-    this.counter = this.counter + 1;
-    const newProduct = {
+    /*const newProduct = {
       id: this.counter,
       ...payload,
-    };
-    return newProduct;
+    };*/
+    /*const newProduct = new Product();
+    newProduct.name = payload.name;
+    newProduct.description = payload.description;
+    newProduct.stock = payload.stock;
+    newProduct.price = payload.price;
+    newProduct.image = payload.image;*/
+
+    const newProduct = this.repository.create(payload);
+    return this.repository.save(newProduct);
   }
 
-  update(id: number, payload: UpdateProductDto) {
-    const product = this.findOne(id);
-    if (product) {
-      const index = this.products.findIndex((item) => item.id);
+  async update(id: number, payload: UpdateProductDto) {
+    const product = await this.findOne(id);
+    this.repository.merge(product, payload);
+    if (!product) {
+      /*const index = this.products.findIndex((item) => item.id);
       this.products[index] = { ...product, ...payload };
-      return this.products[index];
+      return this.products[index];*/
+      return null;
     }
-    return null;
+    return this.repository.save(product);
+  }
+
+  delete(id: number) {
+    return this.repository.delete(id);
   }
 }
